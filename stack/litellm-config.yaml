@@ -1,0 +1,29 @@
+# LiteLLM router config - local Ollama models only (no cloud routes this pass).
+# Ollama runs natively on the host; host.docker.internal:11434 resolves via the
+# extra_hosts host-gateway entry in compose.yaml.
+#
+# nomic-embed-text is DELIBERATELY not listed here: it's embedding-only and would
+# otherwise show up as a selectable (but broken) chat model in Open WebUI's model
+# picker. Open WebUI reaches it directly for RAG via RAG_OLLAMA_BASE_URL instead.
+
+model_list:
+  - model_name: llama-3.1-8b
+    litellm_params:
+      model: ollama/llama3.1:8b-instruct-q4_K_M
+      api_base: http://host.docker.internal:11434
+
+  - model_name: qwen2.5-7b
+    litellm_params:
+      model: ollama/qwen2.5:7b-instruct-q4_K_M
+      api_base: http://host.docker.internal:11434
+
+  - model_name: granite3.2-8b
+    litellm_params:
+      model: ollama/granite3.2:8b-instruct-q4_K_M
+      api_base: http://host.docker.internal:11434
+
+litellm_settings:
+  drop_params: true
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY

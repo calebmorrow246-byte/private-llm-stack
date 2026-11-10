@@ -1,0 +1,22 @@
+# LiteLLM router config - llama.cpp llama-server (Qwen3-Coder-Next) on the host.
+# llama-server listens on the docker0 address only (172.17.0.1:8090), reached from
+# containers via host.docker.internal (host-gateway). Single slot (--parallel 1).
+#
+# nomic-embed-text is DELIBERATELY not listed here: it's embedding-only and would
+# otherwise show up as a selectable (but broken) chat model in Open WebUI's model
+# picker. Open WebUI reaches it directly for RAG via RAG_OLLAMA_BASE_URL instead.
+# Previous Ollama chat routes (llama3.1/qwen2.5/granite3.2) removed 2026-11-03;
+# see litellm-config.yaml.bak-2026-11-03.
+
+model_list:
+  - model_name: qwen3-coder-next
+    litellm_params:
+      model: openai/qwen3-coder-next
+      api_base: http://host.docker.internal:8090/v1
+      api_key: none
+
+litellm_settings:
+  drop_params: true
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY

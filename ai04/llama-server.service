@@ -1,0 +1,22 @@
+# Install: sudo cp llama-server.service /etc/systemd/system/ && sudo systemctl daemon-reload
+#          sudo systemctl enable --now llama-server
+# Binds to the docker0 address so LiteLLM (container) reaches it via host.docker.internal.
+# Authored by Caleb A. Morrow
+# Contributor: Claude - 2026-11-04 - mirrors the manually launched Qwen3-Coder-Next command
+[Unit]
+Description=llama-server (Qwen3-Coder-Next) for ai04 lab
+After=network-online.target docker.service nvidia-persistenced.service
+Wants=network-online.target
+
+[Service]
+User=admin
+WorkingDirectory=/home/admin/llama-lab
+ExecStart=/home/admin/llama-lab/llama.cpp-20261104/build/bin/llama-server \
+  -m /srv/models/gguf/qwen3-coder-next-q4km/Qwen3-Coder-Next-Q4_K_M-00001-of-00004.gguf \
+  --host 172.17.0.1 --port 8090 --jinja -c 196608 --parallel 3 --alias qwen3-coder-next
+Restart=on-failure
+RestartSec=10
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

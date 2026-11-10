@@ -1,0 +1,27 @@
+# ai04 lab stack: LiteLLM only (OpenAI-compatible front door for host-side
+# llama-server). Open WebUI, rag-proxy and Qdrant were removed 2026-11-04;
+# their named volumes (llm_open-webui-data, llm_qdrant-data) were kept.
+# Deployed to /opt/llm/compose.yaml. Secrets come from /opt/llm/.env (never committed).
+#
+# Authored by Caleb A. Morrow
+# Contributor: Claude - 2026-11-04 - trimmed to LiteLLM only
+
+networks:
+  llm-net:
+    driver: bridge
+
+services:
+  litellm:
+    image: ghcr.io/berriai/litellm:main-stable
+    container_name: llm-litellm
+    restart: unless-stopped
+    networks: [llm-net]
+    ports:
+      - "127.0.0.1:4000:4000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY}
+    volumes:
+      - ./litellm-config.yaml:/app/config.yaml:ro
+    command: ["--config", "/app/config.yaml", "--port", "4000"]
